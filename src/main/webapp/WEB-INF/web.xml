@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee
+             https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd"
+         version="5.0">
+
+    <display-name>HiddenTrailsAI</display-name>
+    <description>AI-powered travel planner for North Bengal and Sikkim</description>
+
+    <!-- ─────────────────────────────────────────────────────────
+         WELCOME FILE
+    ───────────────────────────────────────────────────────────── -->
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+
+    <!-- ─────────────────────────────────────────────────────────
+         SESSION CONFIG — 24 hour timeout
+    ───────────────────────────────────────────────────────────── -->
+    <session-config>
+        <session-timeout>1440</session-timeout>
+    </session-config>
+
+    <!-- ─────────────────────────────────────────────────────────
+         CORS FILTER
+         NOTE: Servlets are registered via @WebServlet annotations
+         in each servlet class — NOT declared here in web.xml.
+         Declaring them in BOTH places causes duplicate mapping error.
+    ───────────────────────────────────────────────────────────── -->
+    <filter>
+        <filter-name>CORSFilter</filter-name>
+        <filter-class>com.hiddentrails.util.CORSFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>CORSFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <!-- ─────────────────────────────────────────────────────────
+         AUTH FILTER
+         NOTE: AuthFilter also uses @WebFilter("/api/*") annotation.
+         If duplicate filter error occurs, remove the @WebFilter
+         annotation from AuthFilter.java and keep only this entry.
+    ───────────────────────────────────────────────────────────── -->
+    <filter>
+        <filter-name>AuthFilter</filter-name>
+        <filter-class>com.hiddentrails.util.AuthFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>AuthFilter</filter-name>
+        <url-pattern>/api/*</url-pattern>
+    </filter-mapping>
+
+    <!-- ─────────────────────────────────────────────────────────
+         ERROR PAGES
+    ───────────────────────────────────────────────────────────── -->
+    <error-page>
+        <error-code>404</error-code>
+        <location>/error.jsp</location>
+    </error-page>
+    <error-page>
+        <error-code>500</error-code>
+        <location>/error.jsp</location>
+    </error-page>
+
+    <!-- ─────────────────────────────────────────────────────────
+         NO SERVLET DECLARATIONS HERE
+         All servlets use @WebServlet annotations:
+           AuthServlet              → /api/auth/*
+           ItineraryGenerateServlet → /api/itinerary/generate
+           ItineraryServlet         → /api/itinerary/id/*
+           ItineraryUpdateServlet   → /api/itinerary/* /update
+           ItineraryBookServlet     → /api/itinerary/* /book
+           UserItineraryListServlet → /api/itinerary/user/*
+           DestinationServlet       → /api/destinations
+           AdminServlet             → /api/admin/*
+    ───────────────────────────────────────────────────────────── -->
+
+</web-app>

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Hidden Trails AI — Log4j2 Configuration
+    Location: src/main/resources/log4j2.xml
+
+    Log levels:
+      ROOT        → INFO  (general application flow)
+      com.hiddentrails.servlet  → INFO  (request/response logging)
+      com.hiddentrails.service  → DEBUG (AI prompt, pricing detail)
+      com.hiddentrails.dao      → DEBUG (SQL query tracing in dev)
+
+    Appenders:
+      Console  → development stdout
+      RollingFile → logs/hiddentrails.log (rolls daily, keeps 30 days)
+-->
+<Configuration status="WARN" monitorInterval="30">
+
+    <Properties>
+        <Property name="LOG_DIR">logs</Property>
+        <Property name="LOG_FILE">hiddentrails</Property>
+        <Property name="PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</Property>
+        <Property name="PATTERN_COLOR">%d{HH:mm:ss.SSS} %highlight{%-5level}{FATAL=red blink, ERROR=red, WARN=yellow bold, INFO=green, DEBUG=cyan, TRACE=white} %style{[%t]}{bright,black} %style{%logger{36}}{blue} - %msg%n</Property>
+    </Properties>
+
+    <Appenders>
+
+        <!-- ── Console appender (coloured output for Eclipse console) ── -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${PATTERN_COLOR}" disableAnsi="false"/>
+            <Filters>
+                <!-- Show everything INFO and above in console -->
+                <ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+        </Console>
+
+        <!-- ── Rolling file appender — rolls daily, keeps 30 days ──── -->
+        <RollingFile name="RollingFile"
+                     fileName="${LOG_DIR}/${LOG_FILE}.log"
+                     filePattern="${LOG_DIR}/${LOG_FILE}-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="${PATTERN}"/>
+            <Policies>
+                <!-- Roll at midnight -->
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <!-- Roll when file exceeds 10 MB -->
+                <SizeBasedTriggeringPolicy size="10MB"/>
+            </Policies>
+            <!-- Keep last 30 rolled files -->
+            <DefaultRolloverStrategy max="30"/>
+        </RollingFile>
+
+        <!-- ── Error-only file — captures all ERROR and FATAL ──────── -->
+        <RollingFile name="ErrorFile"
+                     fileName="${LOG_DIR}/${LOG_FILE}-errors.log"
+                     filePattern="${LOG_DIR}/${LOG_FILE}-errors-%d{yyyy-MM-dd}.log.gz">
+            <PatternLayout pattern="${PATTERN}"/>
+            <Filters>
+                <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+            <DefaultRolloverStrategy max="30"/>
+        </RollingFile>
+
+    </Appenders>
+
+    <Loggers>
+
+        <!-- ── Servlet layer: INFO in prod, DEBUG in dev ─────────── -->
+        <Logger name="com.hiddentrails.servlet" level="INFO" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="RollingFile"/>
+            <AppenderRef ref="ErrorFile"/>
+        </Logger>
+
+        <!-- ── Service layer: DEBUG to trace AI prompts & pricing ─── -->
+        <Logger name="com.hiddentrails.service" level="DEBUG" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="RollingFile"/>
+            <AppenderRef ref="ErrorFile"/>
+        </Logger>
+
+        <!-- ── DAO layer: DEBUG to trace SQL in development ──────── -->
+        <!-- Change to INFO for production to reduce log volume -->
+        <Logger name="com.hiddentrails.dao" level="DEBUG" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="RollingFile"/>
+        </Logger>
+
+        <!-- ── Util layer: WARN — only problems ─────────────────── -->
+        <Logger name="com.hiddentrails.util" level="WARN" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="RollingFile"/>
+            <AppenderRef ref="ErrorFile"/>
+        </Logger>
+
+        <!-- ── MySQL JDBC: suppress verbose driver logs ──────────── -->
+        <Logger name="com.mysql" level="WARN" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+
+        <!-- ── Apache DBCP2 connection pool logs ─────────────────── -->
+        <Logger name="org.apache.commons.dbcp2" level="WARN" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+
+        <!-- ── JJWT: WARN only ───────────────────────────────────── -->
+        <Logger name="io.jsonwebtoken" level="WARN" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+
+        <!-- ── JavaMail: WARN only ───────────────────────────────── -->
+        <Logger name="jakarta.mail" level="WARN" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+
+        <!-- ── Root logger: INFO for everything else ─────────────── -->
+        <Root level="INFO">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="RollingFile"/>
+            <AppenderRef ref="ErrorFile"/>
+        </Root>
+
+    </Loggers>
+
+</Configuration>
