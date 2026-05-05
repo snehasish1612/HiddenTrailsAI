@@ -1,1 +1,40 @@
-@charset "ISO-8859-1";
+@charset "UTF-8";
+
+.itinerary-hero {
+    display: grid;
+    gap: 12px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 26px;
+    background: white;
+    box-shadow: var(--shadow);
+}
+
+.itinerary-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.day-list {
+    display: grid;
+    gap: 16px;
+    margin-top: 22px;
+}
+
+.day-card {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 20px;
+    background: white;
+}
+
+.day-card h3 {
+    margin: 0 0 10px;
+}
+
+.day-card p {
+    margin: 6px 0;
+    color: var(--muted);
+    line-height: 1.6;
+}

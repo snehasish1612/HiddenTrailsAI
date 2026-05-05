@@ -1,1 +1,16 @@
-@charset "ISO-8859-1";
+@charset "UTF-8";
+
+.admin-shell {
+    display: grid;
+    gap: 24px;
+}
+
+.stat-card strong {
+    display: block;
+    margin-top: 8px;
+    font-size: 2rem;
+}
+
+.admin-panel {
+    padding: 20px;
+}

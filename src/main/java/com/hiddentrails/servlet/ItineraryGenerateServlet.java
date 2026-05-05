@@ -72,6 +72,8 @@ public class ItineraryGenerateServlet extends HttpServlet {
             // ── 6. Extract title and confidence from AI response ───
             String     title      = pricingService.extractTitle(aiJson);
             BigDecimal confidence = pricingService.extractConfidence(aiJson);
+            List<ItineraryDay> days = pricingService.parseAndEnrich(
+                0, aiJson, request.getAdults());
 
             // ── 7. Build Itinerary entity (without days yet) ───────
             Itinerary itinerary = buildItinerary(request, userId,
@@ -83,8 +85,9 @@ public class ItineraryGenerateServlet extends HttpServlet {
             itinerary.setItineraryId(itineraryId);
 
             // ── 9. Parse + enrich days with pricing data ───────────
-            List<ItineraryDay> days = pricingService.parseAndEnrich(
-                itineraryId, aiJson, request.getAdults());
+            for (ItineraryDay day : days) {
+                day.setItineraryId(itineraryId);
+            }
 
             // ── 10. Save days to DB ────────────────────────────────
             itineraryDAO.saveDays(days);

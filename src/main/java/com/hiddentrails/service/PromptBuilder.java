@@ -72,6 +72,8 @@ public class PromptBuilder {
 
         // ── JSON schema instruction ────────────────────────────────
         sb.append("RESPOND ONLY WITH A VALID JSON OBJECT. No markdown, no explanation, no code fences.\n");
+        sb.append("Use compact JSON. Keep every string on one line. Do not put line breaks inside string values.\n");
+        sb.append("Keep activity under 35 words per day. Include exactly ").append(days).append(" day objects.\n");
         sb.append("The JSON must match this exact structure:\n\n");
         sb.append("{\n");
         sb.append("  \"title\": \"string — catchy trip name\",\n");
