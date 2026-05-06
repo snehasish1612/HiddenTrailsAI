@@ -6,3 +6,11 @@ build/
 .metadata
 bin/
 *.log
+
+# Resource properties
+src/main/resources/app.properties
+src/main/resources/db.properties
+
+# WEB-INF classes properties
+src/main/webapp/WEB-INF/classes/app.properties
+src/main/webapp/WEB-INF/classes/db.properties
